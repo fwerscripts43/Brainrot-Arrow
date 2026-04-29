@@ -1,20 +1,28 @@
--- Draws arrow beams from the player to any models named below (edit if u want)
-
+-- ArrowConnector LocalScript
+-- Place this inside StarterPlayerScripts or StarterCharacterScripts
+-- Draws arrow beams from the player to any models named:
+--   "Garama and Madundung" or "Dragon Cannelloni"
+-- Also shows a floating label above each model with its name and type.
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
+
+-- Name → display info table
 local TARGET_NAMES = {
-	["Garama and Madundung"] = true,
-	["Dragon Cannelloni"] = true,
-  ["Ketchuru and Musturu"] = true,
-  ["Burguro and Fryuro"] = true,
-  ["Fragrama and Chocrama"] = true,
-  ["Hydra Dragon Cannelloni"] = true,
-  ["La Easter Grande"] = true,
-  ["La Lucky Grande"] = true,
-  ["Dragon Gingerini"] = true,
+	["Garama and Madundung"] = { label = "Garama and Madundung" },
+	["Dragon Cannelloni"]    = { label = "Dragon Cannelloni" },
+  ["Ketchuru and Musturu"] = { label = "Ketchuru and Musturu" },
+  ["Burguro and Fryuro"] = { label "Burguro and Fryuro" },
+  ["Fragrama and Chocrama"] = { label "Fragrama and Chocrama" },
+  ["Hydra Dragon Cannelloni"] = { label "Hydra Dragon Cannelloni" },
+  ["La Easter Grande"] = { label "La Easter Grande" },
+  ["La Lucky Grande"] = { label "La Lucky Grande" },
+  ["Dragon Gingerini"] = { label "Dragon Gingerini" },
+	["Meowl"] = { label "Meowl" },
+	["Strawberry Elephant"] = { label "Strawberry Elephant" },
+	["Skibidi Toilet"] = { label "Skikbidi Toilet" },
 }
 
 -- Wait for character to load
@@ -62,6 +70,67 @@ local function getModelColor(name)
 	return Color3.fromRGB(255, 255, 255)
 end
 
+local function createLabel(targetRoot, info, color)
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "ModelLabel"
+	billboard.Adornee = targetRoot
+	billboard.AlwaysOnTop = true
+	billboard.Size = UDim2.new(0, 220, 0, 60)
+	billboard.StudsOffset = Vector3.new(0, 4, 0)   -- floats above the model
+	billboard.ResetOnSpawn = false
+	billboard.Parent = targetRoot
+
+	-- Background frame
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1, 0, 1, 0)
+	frame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+	frame.BackgroundTransparency = 0.25
+	frame.BorderSizePixel = 0
+	frame.Parent = billboard
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = frame
+
+	-- Colored top accent bar
+	local accent = Instance.new("Frame")
+	accent.Size = UDim2.new(1, 0, 0, 4)
+	accent.Position = UDim2.new(0, 0, 0, 0)
+	accent.BackgroundColor3 = color
+	accent.BorderSizePixel = 0
+	accent.Parent = frame
+
+	local accentCorner = Instance.new("UICorner")
+	accentCorner.CornerRadius = UDim.new(0, 8)
+	accentCorner.Parent = accent
+
+	-- Model name label
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.Size = UDim2.new(1, -10, 0, 28)
+	nameLabel.Position = UDim2.new(0, 5, 0, 6)
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Text = info.label
+	nameLabel.TextColor3 = color
+	nameLabel.TextScaled = true
+	nameLabel.Font = Enum.Font.GothamBold
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Center
+	nameLabel.Parent = frame
+
+	-- Type subtitle label
+	local typeLabel = Instance.new("TextLabel")
+	typeLabel.Size = UDim2.new(1, -10, 0, 18)
+	typeLabel.Position = UDim2.new(0, 5, 0, 36)
+	typeLabel.BackgroundTransparency = 1
+	typeLabel.Text = "[ " .. info.type .. " ]"
+	typeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+	typeLabel.TextScaled = true
+	typeLabel.Font = Enum.Font.Gotham
+	typeLabel.TextXAlignment = Enum.TextXAlignment.Center
+	typeLabel.Parent = frame
+
+	return billboard
+end
+
 local function getModelRoot(model)
 	-- Try PrimaryPart first, then HumanoidRootPart, then any BasePart
 	if model.PrimaryPart then return model.PrimaryPart end
@@ -76,15 +145,18 @@ local function connectToModel(model)
 	local targetRoot = getModelRoot(model)
 	if not targetRoot then return end
 
+	local info  = TARGET_NAMES[model.Name]
+	local color = getModelColor(model.Name)
 	local fromAtt = createAttachment(hrp)
 	local toAtt   = createAttachment(targetRoot)
-	local color   = getModelColor(model.Name)
 	local beam    = createBeam(fromAtt, toAtt, color)
+	local label   = createLabel(targetRoot, info, color)
 
 	activeBeams[model] = {
 		beam    = beam,
 		fromAtt = fromAtt,
 		toAtt   = toAtt,
+		label   = label,
 	}
 
 	-- Clean up if the model is removed
@@ -94,6 +166,7 @@ local function connectToModel(model)
 				beam:Destroy()
 				fromAtt:Destroy()
 				toAtt:Destroy()
+				label:Destroy()
 				activeBeams[model] = nil
 			end
 		end
@@ -118,6 +191,7 @@ workspace.DescendantAdded:Connect(function(obj)
 		connectToModel(obj)
 	end
 end)
+
 
 -- Respawn handling: reconnect beams if character respawns
 player.CharacterAdded:Connect(function(newChar)

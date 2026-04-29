@@ -1,7 +1,7 @@
 -- ArrowConnector LocalScript
 -- Place this inside StarterPlayerScripts or StarterCharacterScripts
 -- Draws arrow beams from the player to any models in TARGET_NAMES
--- Also shows a floating label above each model with its name.
+-- Also shows a floating label above each model with its name and type.
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -10,18 +10,18 @@ local player = Players.LocalPlayer
 
 -- Name → display info table
 local TARGET_NAMES = {
-	["Garama and Madundung"]    = { label = "Garama and Madundung" },
-	["Dragon Cannelloni"]       = { label = "Dragon Cannelloni" },
-	["Ketchuru and Musturu"]    = { label = "Ketchuru and Musturu" },
-	["Burguro and Fryuro"]      = { label = "Burguro and Fryuro" },
-	["Fragrama and Chocrama"]   = { label = "Fragrama and Chocrama" },
-	["Hydra Dragon Cannelloni"] = { label = "Hydra Dragon Cannelloni" },
-	["La Easter Grande"]        = { label = "La Easter Grande" },
-	["La Lucky Grande"]         = { label = "La Lucky Grande" },
-	["Dragon Gingerini"]        = { label = "Dragon Gingerini" },
-	["Meowl"]                   = { label = "Meowl" },
-	["Strawberry Elephant"]     = { label = "Strawberry Elephant" },
-	["Skibidi Toilet"]          = { label = "Skibidi Toilet" },
+	["Garama and Madundung"]    = { label = "Garama and Madundung",    type = "Garama and Madundung" },
+	["Dragon Cannelloni"]       = { label = "Dragon Cannelloni",       type = "Dragon Cannelloni" },
+	["Ketchuru and Musturu"]    = { label = "Ketchuru and Musturu",    type = "Ketchuru and Musturu" },
+	["Burguro and Fryuro"]      = { label = "Burguro and Fryuro",      type = "Burguro and Fryuro" },
+	["Fragrama and Chocrama"]   = { label = "Fragrama and Chocrama",   type = "Fragrama and Chocrama" },
+	["Hydra Dragon Cannelloni"] = { label = "Hydra Dragon Cannelloni", type = "Hydra Dragon Cannelloni" },
+	["La Easter Grande"]        = { label = "La Easter Grande",        type = "La Easter Grande" },
+	["La Lucky Grande"]         = { label = "La Lucky Grande",         type = "La Lucky Grande" },
+	["Dragon Gingerini"]        = { label = "Dragon Gingerini",        type = "Dragon Gingerini" },
+	["Meowl"]                   = { label = "Meowl",                   type = "Meowl" },
+	["Strawberry Elephant"]     = { label = "Strawberry Elephant",     type = "Strawberry Elephant" },
+	["Skibidi Toilet"]          = { label = "Skibidi Toilet",          type = "Skibidi Toilet" },
 }
 
 -- Wait for character to load
@@ -60,20 +60,20 @@ local function createBeam(fromAtt, toAtt, color)
 	return beam
 end
 
--- Each model gets a unique color based on its name
+-- Each model gets a unique color
 local MODEL_COLORS = {
-	["Garama and Madundung"]    = Color3.fromRGB(255, 100, 50),   -- orange-red
-	["Dragon Cannelloni"]       = Color3.fromRGB(80, 200, 255),   -- icy blue
-	["Ketchuru and Musturu"]    = Color3.fromRGB(255, 60, 60),    -- red
-	["Burguro and Fryuro"]      = Color3.fromRGB(255, 200, 50),   -- golden yellow
-	["Fragrama and Chocrama"]   = Color3.fromRGB(180, 100, 255),  -- purple
-	["Hydra Dragon Cannelloni"] = Color3.fromRGB(50, 255, 120),   -- green
-	["La Easter Grande"]        = Color3.fromRGB(255, 160, 220),  -- pink
-	["La Lucky Grande"]         = Color3.fromRGB(100, 255, 80),   -- lime
-	["Dragon Gingerini"]        = Color3.fromRGB(255, 140, 0),    -- deep orange
-	["Meowl"]                   = Color3.fromRGB(160, 220, 255),  -- light blue
-	["Strawberry Elephant"]     = Color3.fromRGB(255, 80, 130),   -- strawberry pink
-	["Skibidi Toilet"]          = Color3.fromRGB(200, 200, 200),  -- grey
+	["Garama and Madundung"]    = Color3.fromRGB(255, 100, 50),
+	["Dragon Cannelloni"]       = Color3.fromRGB(80, 200, 255),
+	["Ketchuru and Musturu"]    = Color3.fromRGB(255, 60, 60),
+	["Burguro and Fryuro"]      = Color3.fromRGB(255, 200, 50),
+	["Fragrama and Chocrama"]   = Color3.fromRGB(180, 100, 255),
+	["Hydra Dragon Cannelloni"] = Color3.fromRGB(50, 255, 120),
+	["La Easter Grande"]        = Color3.fromRGB(255, 160, 220),
+	["La Lucky Grande"]         = Color3.fromRGB(100, 255, 80),
+	["Dragon Gingerini"]        = Color3.fromRGB(255, 140, 0),
+	["Meowl"]                   = Color3.fromRGB(160, 220, 255),
+	["Strawberry Elephant"]     = Color3.fromRGB(255, 80, 130),
+	["Skibidi Toilet"]          = Color3.fromRGB(200, 200, 200),
 }
 
 local function getModelColor(name)
@@ -85,7 +85,7 @@ local function createLabel(targetRoot, info, color)
 	billboard.Name = "ModelLabel"
 	billboard.Adornee = targetRoot
 	billboard.AlwaysOnTop = true
-	billboard.Size = UDim2.new(0, 220, 0, 45)
+	billboard.Size = UDim2.new(0, 220, 0, 60)
 	billboard.StudsOffset = Vector3.new(0, 4, 0)
 	billboard.ResetOnSpawn = false
 	billboard.Parent = targetRoot
@@ -116,8 +116,8 @@ local function createLabel(targetRoot, info, color)
 
 	-- Model name label
 	local nameLabel = Instance.new("TextLabel")
-	nameLabel.Size = UDim2.new(1, -10, 1, -8)
-	nameLabel.Position = UDim2.new(0, 5, 0, 8)
+	nameLabel.Size = UDim2.new(1, -10, 0, 28)
+	nameLabel.Position = UDim2.new(0, 5, 0, 6)
 	nameLabel.BackgroundTransparency = 1
 	nameLabel.Text = info.label
 	nameLabel.TextColor3 = color
@@ -125,6 +125,18 @@ local function createLabel(targetRoot, info, color)
 	nameLabel.Font = Enum.Font.GothamBold
 	nameLabel.TextXAlignment = Enum.TextXAlignment.Center
 	nameLabel.Parent = frame
+
+	-- Type subtitle label
+	local typeLabel = Instance.new("TextLabel")
+	typeLabel.Size = UDim2.new(1, -10, 0, 18)
+	typeLabel.Position = UDim2.new(0, 5, 0, 36)
+	typeLabel.BackgroundTransparency = 1
+	typeLabel.Text = "[ " .. info.type .. " ]"
+	typeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+	typeLabel.TextScaled = true
+	typeLabel.Font = Enum.Font.Gotham
+	typeLabel.TextXAlignment = Enum.TextXAlignment.Center
+	typeLabel.Parent = frame
 
 	return billboard
 end

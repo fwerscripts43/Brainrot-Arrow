@@ -1,8 +1,7 @@
 -- ArrowConnector LocalScript
 -- Place this inside StarterPlayerScripts or StarterCharacterScripts
--- Draws arrow beams from the player to any models named:
---   "Garama and Madundung" or "Dragon Cannelloni"
--- Also shows a floating label above each model with its name and type.
+-- Draws arrow beams from the player to any models in TARGET_NAMES
+-- Also shows a floating label above each model with its name.
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -11,18 +10,18 @@ local player = Players.LocalPlayer
 
 -- Name → display info table
 local TARGET_NAMES = {
-	["Garama and Madundung"] = { label = "Garama and Madundung" },
-	["Dragon Cannelloni"]    = { label = "Dragon Cannelloni" },
-  ["Ketchuru and Musturu"] = { label = "Ketchuru and Musturu" },
-  ["Burguro and Fryuro"] = { label "Burguro and Fryuro" },
-  ["Fragrama and Chocrama"] = { label "Fragrama and Chocrama" },
-  ["Hydra Dragon Cannelloni"] = { label "Hydra Dragon Cannelloni" },
-  ["La Easter Grande"] = { label "La Easter Grande" },
-  ["La Lucky Grande"] = { label "La Lucky Grande" },
-  ["Dragon Gingerini"] = { label "Dragon Gingerini" },
-	["Meowl"] = { label "Meowl" },
-	["Strawberry Elephant"] = { label "Strawberry Elephant" },
-	["Skibidi Toilet"] = { label "Skikbidi Toilet" },
+	["Garama and Madundung"]    = { label = "Garama and Madundung" },
+	["Dragon Cannelloni"]       = { label = "Dragon Cannelloni" },
+	["Ketchuru and Musturu"]    = { label = "Ketchuru and Musturu" },
+	["Burguro and Fryuro"]      = { label = "Burguro and Fryuro" },
+	["Fragrama and Chocrama"]   = { label = "Fragrama and Chocrama" },
+	["Hydra Dragon Cannelloni"] = { label = "Hydra Dragon Cannelloni" },
+	["La Easter Grande"]        = { label = "La Easter Grande" },
+	["La Lucky Grande"]         = { label = "La Lucky Grande" },
+	["Dragon Gingerini"]        = { label = "Dragon Gingerini" },
+	["Meowl"]                   = { label = "Meowl" },
+	["Strawberry Elephant"]     = { label = "Strawberry Elephant" },
+	["Skibidi Toilet"]          = { label = "Skibidi Toilet" },
 }
 
 -- Wait for character to load
@@ -46,7 +45,7 @@ local function createBeam(fromAtt, toAtt, color)
 	beam.Attachment1 = toAtt
 	beam.Texture = ARROW_TEXTURE
 	beam.TextureMode = Enum.TextureMode.Static
-	beam.TextureSpeed = 1.5        -- animates the arrow moving forward
+	beam.TextureSpeed = 1.5
 	beam.TextureLength = 3
 	beam.Width0 = 0.4
 	beam.Width1 = 0.4
@@ -54,20 +53,31 @@ local function createBeam(fromAtt, toAtt, color)
 	beam.LightEmission = 0.6
 	beam.LightInfluence = 0.4
 	beam.FaceCamera = true
-	beam.Segments = 1              -- straight line
+	beam.Segments = 1
 	beam.CurveSize0 = 0
 	beam.CurveSize1 = 0
 	beam.Parent = hrp
 	return beam
 end
 
+-- Each model gets a unique color based on its name
+local MODEL_COLORS = {
+	["Garama and Madundung"]    = Color3.fromRGB(255, 100, 50),   -- orange-red
+	["Dragon Cannelloni"]       = Color3.fromRGB(80, 200, 255),   -- icy blue
+	["Ketchuru and Musturu"]    = Color3.fromRGB(255, 60, 60),    -- red
+	["Burguro and Fryuro"]      = Color3.fromRGB(255, 200, 50),   -- golden yellow
+	["Fragrama and Chocrama"]   = Color3.fromRGB(180, 100, 255),  -- purple
+	["Hydra Dragon Cannelloni"] = Color3.fromRGB(50, 255, 120),   -- green
+	["La Easter Grande"]        = Color3.fromRGB(255, 160, 220),  -- pink
+	["La Lucky Grande"]         = Color3.fromRGB(100, 255, 80),   -- lime
+	["Dragon Gingerini"]        = Color3.fromRGB(255, 140, 0),    -- deep orange
+	["Meowl"]                   = Color3.fromRGB(160, 220, 255),  -- light blue
+	["Strawberry Elephant"]     = Color3.fromRGB(255, 80, 130),   -- strawberry pink
+	["Skibidi Toilet"]          = Color3.fromRGB(200, 200, 200),  -- grey
+}
+
 local function getModelColor(name)
-	if name == "Garama and Madundung" then
-		return Color3.fromRGB(255, 100, 50)   -- orange-red
-	elseif name == "Dragon Cannelloni" then
-		return Color3.fromRGB(80, 200, 255)   -- icy blue
-	end
-	return Color3.fromRGB(255, 255, 255)
+	return MODEL_COLORS[name] or Color3.fromRGB(255, 255, 255)
 end
 
 local function createLabel(targetRoot, info, color)
@@ -75,8 +85,8 @@ local function createLabel(targetRoot, info, color)
 	billboard.Name = "ModelLabel"
 	billboard.Adornee = targetRoot
 	billboard.AlwaysOnTop = true
-	billboard.Size = UDim2.new(0, 220, 0, 60)
-	billboard.StudsOffset = Vector3.new(0, 4, 0)   -- floats above the model
+	billboard.Size = UDim2.new(0, 220, 0, 45)
+	billboard.StudsOffset = Vector3.new(0, 4, 0)
 	billboard.ResetOnSpawn = false
 	billboard.Parent = targetRoot
 
@@ -106,8 +116,8 @@ local function createLabel(targetRoot, info, color)
 
 	-- Model name label
 	local nameLabel = Instance.new("TextLabel")
-	nameLabel.Size = UDim2.new(1, -10, 0, 28)
-	nameLabel.Position = UDim2.new(0, 5, 0, 6)
+	nameLabel.Size = UDim2.new(1, -10, 1, -8)
+	nameLabel.Position = UDim2.new(0, 5, 0, 8)
 	nameLabel.BackgroundTransparency = 1
 	nameLabel.Text = info.label
 	nameLabel.TextColor3 = color
@@ -116,23 +126,10 @@ local function createLabel(targetRoot, info, color)
 	nameLabel.TextXAlignment = Enum.TextXAlignment.Center
 	nameLabel.Parent = frame
 
-	-- Type subtitle label
-	local typeLabel = Instance.new("TextLabel")
-	typeLabel.Size = UDim2.new(1, -10, 0, 18)
-	typeLabel.Position = UDim2.new(0, 5, 0, 36)
-	typeLabel.BackgroundTransparency = 1
-	typeLabel.Text = "[ " .. info.type .. " ]"
-	typeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-	typeLabel.TextScaled = true
-	typeLabel.Font = Enum.Font.Gotham
-	typeLabel.TextXAlignment = Enum.TextXAlignment.Center
-	typeLabel.Parent = frame
-
 	return billboard
 end
 
 local function getModelRoot(model)
-	-- Try PrimaryPart first, then HumanoidRootPart, then any BasePart
 	if model.PrimaryPart then return model.PrimaryPart end
 	local hrpFound = model:FindFirstChild("HumanoidRootPart")
 	if hrpFound then return hrpFound end
@@ -140,13 +137,13 @@ local function getModelRoot(model)
 end
 
 local function connectToModel(model)
-	if activeBeams[model] then return end  -- already connected
+	if activeBeams[model] then return end
 
 	local targetRoot = getModelRoot(model)
 	if not targetRoot then return end
 
-	local info  = TARGET_NAMES[model.Name]
-	local color = getModelColor(model.Name)
+	local info    = TARGET_NAMES[model.Name]
+	local color   = getModelColor(model.Name)
 	local fromAtt = createAttachment(hrp)
 	local toAtt   = createAttachment(targetRoot)
 	local beam    = createBeam(fromAtt, toAtt, color)
@@ -187,11 +184,10 @@ scanWorkspace()
 -- Watch for new models added during runtime
 workspace.DescendantAdded:Connect(function(obj)
 	if obj:IsA("Model") and TARGET_NAMES[obj.Name] then
-		task.wait()  -- small wait so model can finish loading
+		task.wait()
 		connectToModel(obj)
 	end
 end)
-
 
 -- Respawn handling: reconnect beams if character respawns
 player.CharacterAdded:Connect(function(newChar)

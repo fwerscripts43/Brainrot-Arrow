@@ -22,6 +22,7 @@ local TARGET_NAMES = {
 	["Meowl"]                   = { label = "Meowl",                   type = "Meowl" },
 	["Strawberry Elephant"]     = { label = "Strawberry Elephant",     type = "Strawberry Elephant" },
 	["Skibidi Toilet"]          = { label = "Skibidi Toilet",          type = "Skibidi Toilet" },
+	["La Casa Boo"]             = { label = "La Casa Boo",          type = "La Casa Boo" },
 }
 
 -- Wait for character to load
